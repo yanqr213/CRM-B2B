@@ -1,0 +1,5 @@
+{
+  "name": "SunEnergyXT B2B Portal",
+  "description": "A comprehensive B2B portal for installers and distributors featuring RBAC, ticket lifecycle management, and product resources.",
+  "requestFramePermissions": []
+}
