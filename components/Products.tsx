@@ -1,14 +1,15 @@
 
 import React, { useState } from 'react';
-import { Product } from '../types';
+import { Product, User, UserRole } from '../types';
 import { Download, ChevronDown, ChevronUp, LifeBuoy, FileText, ArrowRight, ArrowLeft } from 'lucide-react';
 
 interface ProductsProps {
   products: Product[];
   onRequestSupport: (productId: string) => void;
+  currentUser: User;
 }
 
-const Products: React.FC<ProductsProps> = ({ products, onRequestSupport }) => {
+const Products: React.FC<ProductsProps> = ({ products, onRequestSupport, currentUser }) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   // --- Detail View ---
@@ -36,13 +37,17 @@ const Products: React.FC<ProductsProps> = ({ products, onRequestSupport }) => {
                      <h1 className="text-3xl font-extrabold text-gray-900 mt-2">{selectedProduct.name}</h1>
                      <p className="text-gray-500 font-medium mt-1">型号: <span className="text-gray-800">{selectedProduct.model}</span></p>
                    </div>
-                   <button 
-                    onClick={() => onRequestSupport(selectedProduct.id)}
-                    className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition shadow-md font-semibold"
-                   >
-                    <LifeBuoy size={18} />
-                    技术支持
-                   </button>
+                   
+                   {/* Hide Support Button for Installers */}
+                   {currentUser.role !== UserRole.PARTNER_STAFF && (
+                     <button 
+                      onClick={() => onRequestSupport(selectedProduct.id)}
+                      className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition shadow-md font-semibold"
+                     >
+                      <LifeBuoy size={18} />
+                      技术支持
+                     </button>
+                   )}
                 </div>
 
                 {/* Rich Text Description */}

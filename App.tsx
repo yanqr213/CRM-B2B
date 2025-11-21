@@ -214,7 +214,8 @@ const AppContent = () => {
           element={
             <Products 
               products={PRODUCTS} 
-              onRequestSupport={handleRequestSupport} 
+              onRequestSupport={handleRequestSupport}
+              currentUser={currentUser}
             />
           } 
         />
