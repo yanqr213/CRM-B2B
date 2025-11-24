@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Product, User, UserRole } from '../types';
 import { Download, ChevronDown, ChevronUp, LifeBuoy, FileText, ArrowRight, ArrowLeft } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface ProductsProps {
   products: Product[];
@@ -11,6 +12,7 @@ interface ProductsProps {
 
 const Products: React.FC<ProductsProps> = ({ products, onRequestSupport, currentUser }) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const { t } = useLanguage();
 
   // --- Detail View ---
   if (selectedProduct) {
@@ -20,7 +22,7 @@ const Products: React.FC<ProductsProps> = ({ products, onRequestSupport, current
           onClick={() => setSelectedProduct(null)} 
           className="mb-6 text-sm font-medium text-gray-500 hover:text-blue-600 flex items-center gap-2 transition-colors bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm w-fit"
         >
-          <ArrowLeft size={16} /> 返回产品列表
+          <ArrowLeft size={16} /> {t('products')}
         </button>
         
         <div className="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden">
@@ -35,7 +37,7 @@ const Products: React.FC<ProductsProps> = ({ products, onRequestSupport, current
                    <div>
                      <span className="text-sm text-blue-600 font-bold tracking-wide uppercase bg-blue-50 px-2 py-1 rounded">{selectedProduct.category}</span>
                      <h1 className="text-3xl font-extrabold text-gray-900 mt-2">{selectedProduct.name}</h1>
-                     <p className="text-gray-500 font-medium mt-1">型号: <span className="text-gray-800">{selectedProduct.model}</span></p>
+                     <p className="text-gray-500 font-medium mt-1">{t('model')}: <span className="text-gray-800">{selectedProduct.model}</span></p>
                    </div>
                    
                    {/* Hide Support Button for Installers */}
@@ -45,7 +47,7 @@ const Products: React.FC<ProductsProps> = ({ products, onRequestSupport, current
                       className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition shadow-md font-semibold"
                      >
                       <LifeBuoy size={18} />
-                      技术支持
+                      {t('tech_support')}
                      </button>
                    )}
                 </div>
@@ -57,7 +59,7 @@ const Products: React.FC<ProductsProps> = ({ products, onRequestSupport, current
 
                 {/* Specs Summary */}
                 <div className="mt-6 pt-6 border-t border-gray-100">
-                  <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">关键参数</h3>
+                  <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">{t('key_specs')}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {selectedProduct.specs.map((spec, idx) => (
                       <div key={idx} className="bg-gray-50 p-3 rounded-lg border border-gray-100">
@@ -71,7 +73,7 @@ const Products: React.FC<ProductsProps> = ({ products, onRequestSupport, current
 
               {/* Downloads */}
               <div className="mt-8 pt-6 border-t border-gray-100">
-                <h3 className="text-lg font-bold text-gray-800 mb-3">资料下载</h3>
+                <h3 className="text-lg font-bold text-gray-800 mb-3">{t('downloads')}</h3>
                 <div className="flex flex-wrap gap-3">
                   {selectedProduct.documents.map((doc, idx) => (
                     <a key={idx} href={doc.url} className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition text-sm font-medium text-gray-700 bg-white">
@@ -86,7 +88,7 @@ const Products: React.FC<ProductsProps> = ({ products, onRequestSupport, current
 
           {/* FAQ Accordion */}
           <div className="border-t border-gray-200 p-8 bg-gray-50">
-            <h3 className="text-xl font-bold text-gray-900 mb-6">常见问题 (FAQ)</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-6">{t('faq')}</h3>
             <div className="space-y-3 max-w-3xl">
               {selectedProduct.faqs.map((faq, idx) => (
                 <FAQItem key={idx} question={faq.question} answer={faq.answer} />
@@ -102,7 +104,7 @@ const Products: React.FC<ProductsProps> = ({ products, onRequestSupport, current
   return (
     <div className="animate-fade-in">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">产品中心</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{t('products')}</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -126,11 +128,11 @@ const Products: React.FC<ProductsProps> = ({ products, onRequestSupport, current
               <div className="flex items-center justify-between pt-5 border-t border-gray-100 mt-5">
                  <div className="flex gap-2">
                     <span className="px-2 py-1 bg-gray-100 text-xs font-medium rounded text-gray-600 flex items-center gap-1">
-                       <FileText size={12}/> {product.documents.length} 文档
+                       <FileText size={12}/> {product.documents.length}
                     </span>
                  </div>
                  <span className="text-blue-600 text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
-                   查看详情 <ArrowRight size={16} />
+                   {t('view_details')} <ArrowRight size={16} />
                  </span>
               </div>
             </div>

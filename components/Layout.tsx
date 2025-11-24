@@ -12,9 +12,11 @@ import {
   Users,
   UserCog,
   Wrench,
-  UserCircle
+  UserCircle,
+  Globe
 } from 'lucide-react';
 import { User, UserRole } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface LayoutProps {
   currentUser: User;
@@ -26,40 +28,36 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ currentUser, currentPath, onNavigate, onLogout, children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
 
   // Base Nav Items
   const navItems = [
-    { id: 'dashboard', label: '工作台', icon: LayoutDashboard, path: 'dashboard' },
-    { id: 'products', label: '产品中心', icon: Package, path: 'products' },
-    { id: 'support', label: '服务支持', icon: LifeBuoy, path: 'support' },
+    { id: 'dashboard', label: t('dashboard'), icon: LayoutDashboard, path: 'dashboard' },
+    { id: 'products', label: t('products'), icon: Package, path: 'products' },
+    { id: 'support', label: t('support'), icon: LifeBuoy, path: 'support' },
     // Account renamed to Company Info
-    { id: 'company-info', label: '公司信息', icon: Building2, path: 'company-info' },
+    { id: 'company-info', label: t('company_info'), icon: Building2, path: 'company-info' },
   ];
 
   // 1. Internal Account Management (Super Admin Only) - Replaces Sales Mgmt
   if (currentUser.role === UserRole.SUPER_ADMIN) {
-    navItems.splice(1, 0, { id: 'internal-accounts', label: '内部账号管理', icon: ShieldCheck, path: 'internal-accounts' });
+    navItems.splice(1, 0, { id: 'internal-accounts', label: t('internal_accounts'), icon: ShieldCheck, path: 'internal-accounts' });
   }
 
   // 2. Partner Management (Super Admin & Sales)
   if (currentUser.role === UserRole.SUPER_ADMIN || currentUser.role === UserRole.INTERNAL_SALES) {
-    navItems.splice(currentUser.role === UserRole.SUPER_ADMIN ? 2 : 1, 0, { id: 'partner-mgmt', label: '合作伙伴管理', icon: Users, path: 'partner-management' });
+    navItems.splice(currentUser.role === UserRole.SUPER_ADMIN ? 2 : 1, 0, { id: 'partner-mgmt', label: t('partners'), icon: Users, path: 'partner-management' });
   }
 
   // 3. Installer Management (Super Admin, Sales, Partner Admin)
   // Sales/Super manage HQ installers here. Partner Admin manages their own.
   if (currentUser.role !== UserRole.PARTNER_STAFF) {
       const insertIndex = navItems.findIndex(i => i.id === 'products');
-      navItems.splice(insertIndex, 0, { id: 'installers', label: '安装工管理', icon: Wrench, path: 'installers' });
+      navItems.splice(insertIndex, 0, { id: 'installers', label: t('installers'), icon: Wrench, path: 'installers' });
   }
 
   const getRoleLabel = (role: UserRole) => {
-    switch (role) {
-      case UserRole.SUPER_ADMIN: return '超级管理员';
-      case UserRole.INTERNAL_SALES: return 'SunEnergyXT 销售';
-      case UserRole.PARTNER_ADMIN: return '合作伙伴 (管理员)';
-      case UserRole.PARTNER_STAFF: return '安装工';
-    }
+    return t(`role_${role.toLowerCase()}`);
   };
 
   const getRoleColor = (role: UserRole) => {
@@ -70,6 +68,29 @@ const Layout: React.FC<LayoutProps> = ({ currentUser, currentPath, onNavigate, o
       case UserRole.PARTNER_STAFF: return 'bg-green-100 text-green-800';
     }
   };
+
+  const LanguageSwitcher = () => (
+    <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+       <button 
+         onClick={() => setLanguage('de')} 
+         className={`px-2 py-1 text-xs font-bold rounded ${language === 'de' ? 'bg-white shadow text-blue-600' : 'text-gray-500'}`}
+       >
+         DE
+       </button>
+       <button 
+         onClick={() => setLanguage('en')} 
+         className={`px-2 py-1 text-xs font-bold rounded ${language === 'en' ? 'bg-white shadow text-blue-600' : 'text-gray-500'}`}
+       >
+         EN
+       </button>
+       <button 
+         onClick={() => setLanguage('zh')} 
+         className={`px-2 py-1 text-xs font-bold rounded ${language === 'zh' ? 'bg-white shadow text-blue-600' : 'text-gray-500'}`}
+       >
+         CN
+       </button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen flex bg-gray-100 font-sans">
@@ -117,7 +138,7 @@ const Layout: React.FC<LayoutProps> = ({ currentUser, currentPath, onNavigate, o
             className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
           >
             <LogOut size={16} />
-            退出登录
+            {t('logout')}
           </button>
         </div>
       </aside>
@@ -128,9 +149,12 @@ const Layout: React.FC<LayoutProps> = ({ currentUser, currentPath, onNavigate, o
           <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center text-white font-bold">S</div>
           <span className="text-lg font-bold text-gray-800">SunEnergyXT</span>
         </div>
-        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-600">
-          {isMobileMenuOpen ? <X /> : <Menu />}
-        </button>
+        <div className="flex items-center gap-2">
+           <LanguageSwitcher />
+           <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-600">
+             {isMobileMenuOpen ? <X /> : <Menu />}
+           </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
@@ -158,7 +182,7 @@ const Layout: React.FC<LayoutProps> = ({ currentUser, currentPath, onNavigate, o
                 className="w-full flex items-center gap-3 px-3 py-3 text-sm font-medium rounded-lg text-red-600 mt-4 border-t"
               >
                 <LogOut size={18} />
-                退出登录
+                {t('logout')}
               </button>
             </nav>
           </div>
@@ -166,9 +190,15 @@ const Layout: React.FC<LayoutProps> = ({ currentUser, currentPath, onNavigate, o
       )}
 
       {/* Main Content Area */}
-      <main className="flex-1 md:ml-64 pt-16 md:pt-0 p-4 md:p-8 overflow-y-auto">
-        <div className="max-w-7xl mx-auto">
-          {children}
+      <main className="flex-1 md:ml-64 pt-16 md:pt-0 overflow-y-auto relative">
+        {/* Desktop Header Language Switcher */}
+        <div className="hidden md:flex absolute top-4 right-8 z-10">
+           <LanguageSwitcher />
+        </div>
+        <div className="p-4 md:p-8">
+            <div className="max-w-7xl mx-auto">
+              {children}
+            </div>
         </div>
       </main>
     </div>

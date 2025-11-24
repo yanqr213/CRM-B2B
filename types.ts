@@ -7,14 +7,14 @@ export enum UserRole {
 }
 
 export enum TicketStatus {
-  DRAFT = '草稿',
-  PENDING_ASSIGN = '待分配', // Created by Sales, waiting to be sent to Partner
-  PENDING_DISPATCH = '待派单', // Received by Partner Admin, waiting to assign to Staff
-  PENDING_PROCESS = '待处理', // Assigned to Staff
-  IN_PROGRESS = '处理中',    // Staff working
-  PENDING_INTERNAL_AUDIT = '待内部审核', // Staff finished, Partner Admin checks
-  PENDING_FINAL_REVIEW = '待复审',     // Partner Admin approved, Sales checks
-  CLOSED = '已关闭',
+  DRAFT = 'DRAFT',
+  PENDING_ASSIGN = 'PENDING_ASSIGN', // Created by Sales, waiting to be sent to Partner
+  PENDING_DISPATCH = 'PENDING_DISPATCH', // Received by Partner Admin, waiting to assign to Staff
+  PENDING_PROCESS = 'PENDING_PROCESS', // Assigned to Staff
+  IN_PROGRESS = 'IN_PROGRESS',    // Staff working
+  PENDING_INTERNAL_AUDIT = 'PENDING_INTERNAL_AUDIT', // Staff finished, Partner Admin checks
+  PENDING_FINAL_REVIEW = 'PENDING_FINAL_REVIEW',     // Partner Admin approved, Sales checks
+  CLOSED = 'CLOSED',
 }
 
 export interface User {
@@ -24,7 +24,6 @@ export interface User {
   password?: string; 
   role: UserRole;
   companyId: string;
-  // Avatar removed
 }
 
 export interface Company {
@@ -33,7 +32,6 @@ export interface Company {
   address: string;
   phone: string;
   serviceArea: string;
-  // Certifications removed
 }
 
 export interface Product {
@@ -54,7 +52,6 @@ export interface Message {
   senderName: string;
   text: string;
   timestamp: Date;
-  // isInternal removed
 }
 
 export interface TicketLog {
@@ -72,7 +69,7 @@ export interface Ticket {
   title: string;
   customerName: string; // Added for search
   status: TicketStatus;
-  priority: '低' | '中' | '高';
+  priority: 'LOW' | 'MEDIUM' | 'HIGH';
   productId: string;
   
   // Creation Info

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Ticket, User, Product, TicketStatus, UserRole, Message, Company, TicketLog } from '../types';
 import { Search, Plus, Filter, MessageSquare, Paperclip, AlertTriangle, User as UserIcon, ArrowLeft, Send, XCircle, Calendar, Hash, UserCircle, Trash2, Settings, History } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface SupportProps {
   currentUser: User;
@@ -30,6 +31,7 @@ const Support: React.FC<SupportProps> = ({
 }) => {
   const [view, setView] = useState<'list' | 'create' | 'detail'>('list');
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const { t } = useLanguage();
   
   // Filter States
   const [searchTerm, setSearchTerm] = useState('');
@@ -171,7 +173,7 @@ const Support: React.FC<SupportProps> = ({
 
   const handleDelete = () => {
       if (!selectedTicket || !onDeleteTicket) return;
-      if (window.confirm('确定要删除此工单吗？此操作不可撤销。')) {
+      if (window.confirm(t('confirm_delete'))) {
           onDeleteTicket(selectedTicket.id);
           setView('list');
           setSelectedTicket(null);
@@ -182,7 +184,7 @@ const Support: React.FC<SupportProps> = ({
     e.preventDefault();
     
     if (formData.serviceTypes.length === 0) {
-        alert('请至少选择一个服务类型');
+        alert('Please select at least one service type');
         return;
     }
 
@@ -195,7 +197,7 @@ const Support: React.FC<SupportProps> = ({
     if (currentUser.role === UserRole.SUPER_ADMIN) {
         // Super Admin must assign to a Sales Rep
         if (!formData.salesOwnerId) {
-            alert("请选择负责的销售人员");
+            alert("Select Sales Rep");
             return;
         }
         salesOwnerId = formData.salesOwnerId;
@@ -221,7 +223,7 @@ const Support: React.FC<SupportProps> = ({
       title: formData.title,
       customerName: formData.customerName,
       status: initialStatus,
-      priority: '中',
+      priority: 'MEDIUM',
       productId: formData.productId,
       createdBy: currentUser.id,
       createdRole: currentUser.role,
@@ -245,7 +247,7 @@ const Support: React.FC<SupportProps> = ({
       }] : [],
       logs: [{
           id: `log${Date.now()}`,
-          action: '创建工单',
+          action: 'Create Ticket',
           operatorId: currentUser.id,
           operatorName: currentUser.name,
           operatorRole: currentUser.role,
@@ -270,11 +272,11 @@ const Support: React.FC<SupportProps> = ({
       messages: [...selectedTicket.messages, {
         id: `sys${Date.now()}`,
         senderId: 'system',
-        senderName: '系统',
-        text: `工单已分配给: ${partnerName}`,
+        senderName: 'system',
+        text: `Assigned to: ${partnerName}`,
         timestamp: new Date(),
       }],
-      logs: [...selectedTicket.logs, createLog(`分配工单给: ${partnerName}`)]
+      logs: [...selectedTicket.logs, createLog(`Assign to: ${partnerName}`)]
     };
     onUpdateTicket(updatedTicket);
     setSelectedTicket(updatedTicket);
@@ -293,11 +295,11 @@ const Support: React.FC<SupportProps> = ({
       messages: [...selectedTicket.messages, {
         id: `sys${Date.now()}`,
         senderId: 'system',
-        senderName: '系统',
-        text: `工单已指派给安装工: ${staff?.name}`,
+        senderName: 'system',
+        text: `Assigned to staff: ${staff?.name}`,
         timestamp: new Date(),
       }],
-      logs: [...selectedTicket.logs, createLog(`指派安装工: ${staff?.name}`)]
+      logs: [...selectedTicket.logs, createLog(`Assign staff: ${staff?.name}`)]
     };
     onUpdateTicket(updatedTicket);
     setSelectedTicket(updatedTicket);
@@ -308,10 +310,10 @@ const Support: React.FC<SupportProps> = ({
   const handleStatusChange = (newStatus: TicketStatus, note?: string) => {
     if (!selectedTicket) return;
     
-    let sysMsgText = `状态更新为: ${newStatus}`;
+    let sysMsgText = `Status updated: ${newStatus}`;
     if (note) sysMsgText += ` (${note})`;
 
-    const logAction = `更新状态: ${newStatus}${note ? ` (${note})` : ''}`;
+    const logAction = `Update status: ${newStatus}${note ? ` (${note})` : ''}`;
 
     const updatedTicket = { 
       ...selectedTicket, 
@@ -320,7 +322,7 @@ const Support: React.FC<SupportProps> = ({
       messages: [...selectedTicket.messages, {
         id: `sys${Date.now()}`,
         senderId: 'system',
-        senderName: '系统',
+        senderName: 'system',
         text: sysMsgText,
         timestamp: new Date(),
       }],
@@ -337,9 +339,9 @@ const Support: React.FC<SupportProps> = ({
       const isHQAssigned = selectedTicket.assignedToCompanyId === 'c0';
       
       if (isPartnerCreated || isHQAssigned) {
-          handleStatusChange(TicketStatus.CLOSED, '审核通过 (流程归档)');
+          handleStatusChange(TicketStatus.CLOSED, 'Audit Pass (Archived)');
       } else {
-          handleStatusChange(TicketStatus.PENDING_FINAL_REVIEW, '内部审核通过 (提交总部复审)');
+          handleStatusChange(TicketStatus.PENDING_FINAL_REVIEW, 'Audit Pass (Pending Review)');
       }
   }
 
@@ -374,9 +376,9 @@ const Support: React.FC<SupportProps> = ({
        if (isSales || isSuperAdmin) {
           return (
             <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-4">
-              <h4 className="font-bold text-yellow-800 mb-2 flex items-center gap-2"><AlertTriangle size={16}/> 需要分配</h4>
+              <h4 className="font-bold text-yellow-800 mb-2 flex items-center gap-2"><AlertTriangle size={16}/> {t('assign')}</h4>
               <button onClick={() => setShowAssignCompanyModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-blue-700 w-full md:w-auto">
-                分配给合作伙伴或总部
+                {t('assign')}
               </button>
             </div>
           );
@@ -397,9 +399,9 @@ const Support: React.FC<SupportProps> = ({
     if (isPartnerDispatching || isHQDispatching || (isSuperAdmin && selectedTicket.status === TicketStatus.PENDING_DISPATCH)) {
        return (
          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
-            <h4 className="font-bold text-blue-800 mb-2 flex items-center gap-2"><UserIcon size={16}/> 需要派单</h4>
+            <h4 className="font-bold text-blue-800 mb-2 flex items-center gap-2"><UserIcon size={16}/> {t('dispatch')}</h4>
             <button onClick={() => setShowAssignStaffModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-blue-700 w-full md:w-auto">
-              指派安装工 {selectedTicket.assignedToCompanyId === 'c0' ? '(总部)' : ''}
+              {t('dispatch')}
             </button>
          </div>
        );
@@ -415,20 +417,20 @@ const Support: React.FC<SupportProps> = ({
     
     // Helper to determine if this is an override action (not the assigned staff)
     const isOverride = !isAssignedStaff;
-    const overrideLabel = isOverride ? '(权限覆盖)' : '';
+    const overrideLabel = isOverride ? ' (Override)' : '';
 
     if (canOperateProcess) {
         if (selectedTicket.status === TicketStatus.PENDING_PROCESS) {
             return (
               <button onClick={() => handleStatusChange(TicketStatus.IN_PROGRESS)} className="w-full py-3 bg-blue-600 text-white rounded-lg font-bold shadow-md hover:bg-blue-700 mb-4">
-                开始处理 {overrideLabel}
+                {t('start_process')} {overrideLabel}
               </button>
             );
         }
         if (selectedTicket.status === TicketStatus.IN_PROGRESS) {
              return (
               <button onClick={() => handleStatusChange(TicketStatus.PENDING_INTERNAL_AUDIT)} className="w-full py-3 bg-green-600 text-white rounded-lg font-bold shadow-md hover:bg-green-700 mb-4">
-                完成处理 & 提交审核 {overrideLabel}
+                {t('finish_submit')} {overrideLabel}
               </button>
             );
         }
@@ -449,14 +451,14 @@ const Support: React.FC<SupportProps> = ({
         const isPartnerCreated = selectedTicket.createdRole === UserRole.PARTNER_ADMIN || selectedTicket.createdRole === UserRole.PARTNER_STAFF;
         const isHQAssigned = selectedTicket.assignedToCompanyId === 'c0';
 
-        const nextStepText = (isPartnerCreated || isHQAssigned) ? '通过 (归档)' : '通过 (提交复审)';
+        const nextStepText = (isPartnerCreated || isHQAssigned) ? t('approve') : t('approve');
         
         return (
            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200 mb-4">
-              <h4 className="font-bold text-purple-800 mb-3">内部审核 {isHQAssigned ? '(总部)' : ''}</h4>
+              <h4 className="font-bold text-purple-800 mb-3">{t('status_pending_internal_audit')}</h4>
               <div className="flex gap-2">
-                 <button onClick={() => handleStatusChange(TicketStatus.IN_PROGRESS, '内部审核驳回')} className="flex-1 py-2 bg-red-100 text-red-700 rounded-lg border border-red-200 hover:bg-red-200 font-medium">
-                    驳回
+                 <button onClick={() => handleStatusChange(TicketStatus.IN_PROGRESS, 'Rejected')} className="flex-1 py-2 bg-red-100 text-red-700 rounded-lg border border-red-200 hover:bg-red-200 font-medium">
+                    {t('reject')}
                  </button>
                  <button onClick={handleInternalAuditPass} className="flex-1 py-2 bg-green-600 text-white rounded-lg font-bold shadow-sm hover:bg-green-700">
                     {nextStepText}
@@ -470,13 +472,13 @@ const Support: React.FC<SupportProps> = ({
     if (selectedTicket.status === TicketStatus.PENDING_FINAL_REVIEW && (isSales || isSuperAdmin)) {
          return (
            <div className="bg-orange-50 p-4 rounded-lg border border-orange-200 mb-4">
-              <h4 className="font-bold text-orange-800 mb-3">SunEnergyXT 最终复审</h4>
+              <h4 className="font-bold text-orange-800 mb-3">{t('status_pending_final_review')}</h4>
               <div className="flex gap-2">
-                 <button onClick={() => handleStatusChange(TicketStatus.IN_PROGRESS, '总部复审驳回')} className="flex-1 py-2 bg-red-100 text-red-700 rounded-lg border border-red-200 hover:bg-red-200 font-medium">
-                    驳回
+                 <button onClick={() => handleStatusChange(TicketStatus.IN_PROGRESS, 'Rejected')} className="flex-1 py-2 bg-red-100 text-red-700 rounded-lg border border-red-200 hover:bg-red-200 font-medium">
+                    {t('reject')}
                  </button>
-                 <button onClick={() => handleStatusChange(TicketStatus.CLOSED, '总部复审通过')} className="flex-1 py-2 bg-green-600 text-white rounded-lg font-bold shadow-sm hover:bg-green-700">
-                    确认完结 (关闭工单)
+                 <button onClick={() => handleStatusChange(TicketStatus.CLOSED, 'Approved')} className="flex-1 py-2 bg-green-600 text-white rounded-lg font-bold shadow-sm hover:bg-green-700">
+                    {t('confirm_close')}
                  </button>
               </div>
            </div>
@@ -493,7 +495,7 @@ const Support: React.FC<SupportProps> = ({
     return (
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-gray-900">创建服务工单</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t('create_ticket')}</h2>
           <button onClick={() => { setView('list'); onClearPreSelectedProduct(); }} className="text-gray-500 hover:text-gray-700"><XCircle /></button>
         </div>
         
@@ -501,14 +503,14 @@ const Support: React.FC<SupportProps> = ({
           {/* SUPER ADMIN ASSIGNMENT */}
           {currentUser.role === UserRole.SUPER_ADMIN && (
              <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                <label className="block text-sm font-bold text-purple-800 mb-2">指派销售负责人 (超管必选)</label>
+                <label className="block text-sm font-bold text-purple-800 mb-2">{t('select_sales')}</label>
                 <select 
                   required
                   className="w-full border border-purple-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none bg-white text-gray-900"
                   value={formData.salesOwnerId}
                   onChange={e => setFormData({...formData, salesOwnerId: e.target.value})}
                 >
-                  <option value="">选择销售人员...</option>
+                  <option value="">...</option>
                   {allUsers.filter(u => u.role === UserRole.INTERNAL_SALES).map(s => (
                     <option key={s.id} value={s.id}>{s.name} ({s.email})</option>
                   ))}
@@ -518,38 +520,38 @@ const Support: React.FC<SupportProps> = ({
 
           {/* Customer Info */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">客户姓名</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('customer_name')}</label>
             <input 
               type="text" 
               required
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white text-gray-900"
               value={formData.customerName}
               onChange={e => setFormData({...formData, customerName: e.target.value})}
-              placeholder="客户姓名"
+              placeholder={t('customer_name')}
             />
           </div>
 
           {/* Product Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">产品型号</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('product_model')}</label>
               <select 
                 required
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white text-gray-900"
                 value={formData.productId}
                 onChange={e => setFormData({...formData, productId: e.target.value})}
               >
-                <option value="">选择产品</option>
+                <option value="">{t('product_model')}</option>
                 {products.map(p => <option key={p.id} value={p.id}>{p.name} ({p.model})</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">序列号 (SLN)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('sln')}</label>
               <input 
                 type="text" 
                 required
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white text-gray-900"
-                placeholder="例如：SLN-2024-XXXX"
+                placeholder="SLN-2024-XXXX"
                 value={formData.sln}
                 onChange={e => setFormData({...formData, sln: e.target.value})}
               />
@@ -557,56 +559,56 @@ const Support: React.FC<SupportProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">工单标题</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('ticket_title')}</label>
             <input 
               type="text" 
               required
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none bg-white text-gray-900"
               value={formData.title}
               onChange={e => setFormData({...formData, title: e.target.value})}
-              placeholder="简要描述问题"
+              placeholder={t('ticket_title')}
             />
           </div>
 
           {/* Service Types (Multi-select) */}
           <div>
-             <label className="block text-sm font-medium text-gray-700 mb-2">服务类型 (可多选)</label>
+             <label className="block text-sm font-medium text-gray-700 mb-2">{t('service_types')}</label>
              <div className="flex gap-6">
                 <label className="flex items-center gap-2 cursor-pointer bg-gray-50 px-4 py-3 rounded-lg border border-gray-200 hover:bg-gray-100 transition select-none">
                    <input 
                      type="checkbox" 
                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                     checked={formData.serviceTypes.includes('新设备安装')}
-                     onChange={() => toggleServiceType('新设备安装')}
+                     checked={formData.serviceTypes.includes('Installation')}
+                     onChange={() => toggleServiceType('Installation')}
                    />
-                   <span className="text-gray-700 font-medium">新设备安装</span>
+                   <span className="text-gray-700 font-medium">{t('type_install')}</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer bg-gray-50 px-4 py-3 rounded-lg border border-gray-200 hover:bg-gray-100 transition select-none">
                    <input 
                      type="checkbox" 
                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                     checked={formData.serviceTypes.includes('旧设备拆除')}
-                     onChange={() => toggleServiceType('旧设备拆除')}
+                     checked={formData.serviceTypes.includes('Removal')}
+                     onChange={() => toggleServiceType('Removal')}
                    />
-                   <span className="text-gray-700 font-medium">旧设备拆除</span>
+                   <span className="text-gray-700 font-medium">{t('type_remove')}</span>
                 </label>
              </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">详细描述</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('desc')}</label>
             <textarea 
               required
               className="w-full border border-gray-300 rounded-lg px-3 py-2 h-32 focus:ring-2 focus:ring-blue-500 outline-none resize-none bg-white text-gray-900"
               value={formData.description}
               onChange={e => setFormData({...formData, description: e.target.value})}
-              placeholder="请提供详细的问题描述、安装环境要求等..."
+              placeholder="..."
             ></textarea>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
-             <button type="button" onClick={() => { setView('list'); onClearPreSelectedProduct(); }} className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">取消</button>
-             <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md">提交工单</button>
+             <button type="button" onClick={() => { setView('list'); onClearPreSelectedProduct(); }} className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">{t('cancel')}</button>
+             <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md">{t('submit')}</button>
           </div>
         </form>
       </div>
@@ -618,7 +620,7 @@ const Support: React.FC<SupportProps> = ({
       <div className="flex flex-col h-[calc(100vh-140px)]">
         <div className="flex justify-between items-center mb-4">
             <button onClick={() => setView('list')} className="flex items-center gap-2 text-gray-500 hover:text-gray-800 w-fit">
-            <ArrowLeft size={18} /> 返回列表
+            <ArrowLeft size={18} /> {t('support')}
             </button>
             
             {/* Delete Button */}
@@ -627,7 +629,7 @@ const Support: React.FC<SupportProps> = ({
                     onClick={handleDelete} 
                     className="flex items-center gap-2 px-3 py-1.5 text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg text-sm font-medium transition"
                 >
-                    <Trash2 size={16} /> 删除工单
+                    <Trash2 size={16} /> {t('delete')}
                 </button>
             )}
         </div>
@@ -639,7 +641,7 @@ const Support: React.FC<SupportProps> = ({
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                  <div className="flex justify-between items-start mb-4">
                    <div>
-                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">工单 #{selectedTicket.id}</span>
+                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('ticket_id')} #{selectedTicket.id}</span>
                      <h2 className="text-xl font-bold text-gray-900 mt-1">{selectedTicket.title}</h2>
                      <p className="text-sm text-blue-600 mt-1 font-medium flex items-center gap-1"><UserCircle size={14}/> {selectedTicket.customerName}</p>
                    </div>
@@ -652,17 +654,17 @@ const Support: React.FC<SupportProps> = ({
                  {/* Assignment Info */}
                  <div className="mt-4 p-3 bg-gray-50 rounded-lg text-sm space-y-2 border border-gray-100">
                     <div className="flex justify-between">
-                      <span className="text-gray-500">合作伙伴:</span>
-                      <span className="font-medium">{allCompanies.find(c => c.id === selectedTicket.assignedToCompanyId)?.name || '待分配'}</span>
+                      <span className="text-gray-500">{t('partners')}:</span>
+                      <span className="font-medium">{allCompanies.find(c => c.id === selectedTicket.assignedToCompanyId)?.name || '-'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">安装工:</span>
-                      <span className="font-medium">{allUsers.find(u => u.id === selectedTicket.assignedToUserId)?.name || '待指派'}</span>
+                      <span className="text-gray-500">{t('installers')}:</span>
+                      <span className="font-medium">{allUsers.find(u => u.id === selectedTicket.assignedToUserId)?.name || '-'}</span>
                     </div>
                     {/* Show Sales Owner if assigned by Super Admin */}
                     {selectedTicket.salesOwnerId && (
                         <div className="flex justify-between border-t border-gray-200 pt-2 mt-2">
-                            <span className="text-gray-500">负责销售:</span>
+                            <span className="text-gray-500">{t('role_internal_sales')}:</span>
                             <span className="font-medium text-purple-700">{allUsers.find(u => u.id === selectedTicket.salesOwnerId)?.name}</span>
                         </div>
                     )}
@@ -671,24 +673,24 @@ const Support: React.FC<SupportProps> = ({
 
               {/* Ticket Details */}
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                 <h3 className="font-semibold text-gray-900 mb-4">详细信息</h3>
+                 <h3 className="font-semibold text-gray-900 mb-4">{t('details')}</h3>
                  <div className="space-y-4 text-sm">
                     <div>
-                       <span className="text-gray-500 block mb-1">任务描述</span>
+                       <span className="text-gray-500 block mb-1">{t('desc')}</span>
                        <p className="text-gray-800 bg-gray-50 p-3 rounded border border-gray-100">{selectedTicket.description}</p>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                        <div>
-                          <span className="text-gray-500 block">序列号 (SLN)</span>
+                          <span className="text-gray-500 block">{t('sln')}</span>
                           <span className="font-medium">{selectedTicket.sln}</span>
                        </div>
                        <div>
-                          <span className="text-gray-500 block">创建时间</span>
+                          <span className="text-gray-500 block">{t('last_updated')}</span>
                           <span className="font-medium">{new Date(selectedTicket.createdAt).toLocaleDateString()}</span>
                        </div>
                     </div>
                      <div>
-                       <span className="text-gray-500 block mb-1">服务类型</span>
+                       <span className="text-gray-500 block mb-1">{t('service_types')}</span>
                        <div className="flex flex-wrap gap-2">
                           {selectedTicket.serviceTypes && selectedTicket.serviceTypes.length > 0 ? (
                               selectedTicket.serviceTypes.map(t => (
@@ -696,7 +698,7 @@ const Support: React.FC<SupportProps> = ({
                                      <Settings size={10}/> {t}
                                   </span>
                               ))
-                          ) : <span className="text-gray-400 italic">无</span>}
+                          ) : <span className="text-gray-400 italic">None</span>}
                        </div>
                     </div>
                  </div>
@@ -705,7 +707,7 @@ const Support: React.FC<SupportProps> = ({
               {/* Operation Logs */}
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                 <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <History size={18} className="text-gray-400"/> 操作日志
+                    <History size={18} className="text-gray-400"/> Log
                 </h3>
                 <ul className="space-y-4 max-h-60 overflow-y-auto pr-2">
                     {[...selectedTicket.logs].reverse().map(log => (
@@ -714,15 +716,12 @@ const Support: React.FC<SupportProps> = ({
                             <div className="text-xs text-gray-400 mb-0.5">{new Date(log.timestamp).toLocaleString()}</div>
                             <div className="text-sm font-medium text-gray-800">{log.action}</div>
                             <div className="text-xs text-gray-500 mt-0.5">
-                                操作人: <span className="font-medium">{log.operatorName}</span> 
-                                {log.operatorRole === UserRole.SUPER_ADMIN && <span className="text-red-500 ml-1">(超管)</span>}
-                                {log.operatorRole === UserRole.INTERNAL_SALES && <span className="text-purple-500 ml-1">(销售)</span>}
-                                {log.operatorRole === UserRole.PARTNER_ADMIN && <span className="text-blue-500 ml-1">(伙伴管理)</span>}
+                                {log.operatorName} 
                             </div>
                         </li>
                     ))}
                     {selectedTicket.logs.length === 0 && (
-                        <li className="text-center text-gray-400 text-sm py-2">暂无日志</li>
+                        <li className="text-center text-gray-400 text-sm py-2">No logs</li>
                     )}
                 </ul>
               </div>
@@ -731,7 +730,7 @@ const Support: React.FC<SupportProps> = ({
            {/* Right: Chat */}
            <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
              <div className="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
-               <h3 className="font-bold text-gray-700 flex items-center gap-2"><MessageSquare size={18} /> 沟通记录</h3>
+               <h3 className="font-bold text-gray-700 flex items-center gap-2"><MessageSquare size={18} /> Chat</h3>
              </div>
              
              <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-white">
@@ -777,16 +776,16 @@ const Support: React.FC<SupportProps> = ({
         {showAssignCompanyModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-xl p-6 w-96 shadow-xl">
-               <h3 className="font-bold text-lg mb-4">分配工单给合作伙伴</h3>
+               <h3 className="font-bold text-lg mb-4">{t('assign')}</h3>
                <select className="w-full border border-gray-300 p-2 rounded mb-4 bg-white text-gray-900 outline-none focus:ring-2 focus:ring-blue-500" value={selectedAssignId} onChange={e => setSelectedAssignId(e.target.value)}>
-                 <option value="">选择合作伙伴...</option>
+                 <option value="">...</option>
                  {getAssignablePartners().map(c => (
-                   <option key={c.id} value={c.id}>{c.name} {c.id === 'c0' ? '(自营)' : `(${c.serviceArea})`}</option>
+                   <option key={c.id} value={c.id}>{c.name} {c.id === 'c0' ? '(HQ)' : `(${c.serviceArea})`}</option>
                  ))}
                </select>
                <div className="flex justify-end gap-2">
-                 <button onClick={() => setShowAssignCompanyModal(false)} className="px-4 py-2 text-gray-600">取消</button>
-                 <button onClick={handleAssignPartner} className="px-4 py-2 bg-blue-600 text-white rounded">确认分配</button>
+                 <button onClick={() => setShowAssignCompanyModal(false)} className="px-4 py-2 text-gray-600">{t('cancel')}</button>
+                 <button onClick={handleAssignPartner} className="px-4 py-2 bg-blue-600 text-white rounded">{t('save')}</button>
                </div>
             </div>
           </div>
@@ -796,16 +795,16 @@ const Support: React.FC<SupportProps> = ({
         {showAssignStaffModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-xl p-6 w-96 shadow-xl">
-               <h3 className="font-bold text-lg mb-4">指派安装工</h3>
+               <h3 className="font-bold text-lg mb-4">{t('dispatch')}</h3>
                <select className="w-full border border-gray-300 p-2 rounded mb-4 bg-white text-gray-900 outline-none focus:ring-2 focus:ring-blue-500" value={selectedAssignId} onChange={e => setSelectedAssignId(e.target.value)}>
-                 <option value="">选择员工...</option>
+                 <option value="">...</option>
                  {getAssignableStaff().map(u => (
                    <option key={u.id} value={u.id}>{u.name}</option>
                  ))}
                </select>
                <div className="flex justify-end gap-2">
-                 <button onClick={() => setShowAssignStaffModal(false)} className="px-4 py-2 text-gray-600">取消</button>
-                 <button onClick={handleAssignStaff} className="px-4 py-2 bg-blue-600 text-white rounded">确认指派</button>
+                 <button onClick={() => setShowAssignStaffModal(false)} className="px-4 py-2 text-gray-600">{t('cancel')}</button>
+                 <button onClick={handleAssignStaff} className="px-4 py-2 bg-blue-600 text-white rounded">{t('save')}</button>
                </div>
             </div>
           </div>
@@ -817,10 +816,10 @@ const Support: React.FC<SupportProps> = ({
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-        <h2 className="text-2xl font-bold text-gray-900">服务支持中心</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{t('support')}</h2>
         {currentUser.role !== UserRole.PARTNER_STAFF && (
           <button onClick={() => setView('create')} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 shadow-sm transition">
-            <Plus size={18} /> 新建工单
+            <Plus size={18} /> {t('create_ticket')}
           </button>
         )}
       </div>
@@ -831,7 +830,7 @@ const Support: React.FC<SupportProps> = ({
            <Search className="absolute left-3 top-2.5 text-gray-400" size={20} />
            <input 
              type="text" 
-             placeholder="搜索：工单号 / 标题 / SLN / 客户名 / 日期..." 
+             placeholder={t('search_placeholder')}
              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-gray-900"
              value={searchTerm}
              onChange={e => setSearchTerm(e.target.value)}
@@ -844,7 +843,7 @@ const Support: React.FC<SupportProps> = ({
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
           >
-            <option value="All">所有状态</option>
+            <option value="All">{t('all_status')}</option>
             {Object.values(TicketStatus).map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
@@ -856,11 +855,11 @@ const Support: React.FC<SupportProps> = ({
           <table className="w-full text-left text-sm">
             <thead className="bg-gray-50 border-b border-gray-200 text-gray-500 font-medium uppercase">
               <tr>
-                <th className="px-6 py-4">工单 ID</th>
-                <th className="px-6 py-4">标题 / 客户</th>
-                <th className="px-6 py-4">负责方</th>
-                <th className="px-6 py-4">状态</th>
-                <th className="px-6 py-4">最后更新</th>
+                <th className="px-6 py-4">{t('ticket_id')}</th>
+                <th className="px-6 py-4">{t('title_customer')}</th>
+                <th className="px-6 py-4">{t('responsible')}</th>
+                <th className="px-6 py-4">{t('status')}</th>
+                <th className="px-6 py-4">{t('last_updated')}</th>
                 <th className="px-6 py-4"></th>
               </tr>
             </thead>
@@ -877,7 +876,7 @@ const Support: React.FC<SupportProps> = ({
                   </td>
                   <td className="px-6 py-4 text-gray-500">
                     <div className="flex flex-col text-xs">
-                      <span className="font-bold">{allCompanies.find(c => c.id === ticket.assignedToCompanyId)?.name || '待分配'}</span>
+                      <span className="font-bold">{allCompanies.find(c => c.id === ticket.assignedToCompanyId)?.name || '-'}</span>
                       <span className="text-gray-400">{allUsers.find(u => u.id === ticket.assignedToUserId)?.name || ''}</span>
                     </div>
                   </td>
@@ -888,13 +887,13 @@ const Support: React.FC<SupportProps> = ({
                       onClick={() => { setSelectedTicket(ticket); setView('detail'); }}
                       className="text-blue-600 hover:underline font-medium bg-blue-50 px-3 py-1 rounded hover:bg-blue-100 transition"
                     >
-                      处理
+                      {t('process')}
                     </button>
                   </td>
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">未找到相关工单。</td>
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">No tickets found.</td>
                 </tr>
               )}
             </tbody>
@@ -906,6 +905,7 @@ const Support: React.FC<SupportProps> = ({
 };
 
 const StatusBadge: React.FC<{ status: TicketStatus }> = ({ status }) => {
+  const { t } = useLanguage();
   const styles = {
     [TicketStatus.DRAFT]: 'bg-gray-100 text-gray-800',
     [TicketStatus.PENDING_ASSIGN]: 'bg-yellow-100 text-yellow-800',
@@ -918,13 +918,14 @@ const StatusBadge: React.FC<{ status: TicketStatus }> = ({ status }) => {
   };
   return (
     <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[status] || 'bg-gray-100'}`}>
-      {status}
+      {t(`status_${status.toLowerCase()}`)}
     </span>
   );
 };
 
 const MessageInput: React.FC<{ onSend: (text: string) => void }> = ({ onSend }) => {
   const [text, setText] = useState('');
+  const { t } = useLanguage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -938,7 +939,7 @@ const MessageInput: React.FC<{ onSend: (text: string) => void }> = ({ onSend }) 
        <div className="relative">
          <textarea 
            className="w-full border border-gray-300 rounded-lg pl-4 pr-12 py-3 focus:ring-2 focus:ring-blue-500 outline-none resize-none bg-white text-gray-900"
-           placeholder="输入消息..."
+           placeholder="..."
            rows={2}
            value={text}
            onChange={e => setText(e.target.value)}
@@ -950,7 +951,7 @@ const MessageInput: React.FC<{ onSend: (text: string) => void }> = ({ onSend }) 
        </div>
        <div className="flex justify-end items-center">
           <button type="submit" disabled={!text.trim()} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
-            <Send size={16} /> 发送
+            <Send size={16} /> {t('submit')}
           </button>
        </div>
     </form>

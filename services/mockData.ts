@@ -57,17 +57,17 @@ export const USERS: User[] = [
 export const COMPANIES: Company[] = [
   {
     id: 'c0',
-    name: 'SunEnergyXT 总部',
+    name: 'SunEnergyXT HQ',
     address: '总部大楼',
     phone: '400-123-4567',
-    serviceArea: '全球',
+    serviceArea: 'Global',
   },
   {
     id: 'c2',
-    name: '快修新能源服务商',
+    name: 'FastFix Energy Services',
     address: '上海市浦东新区科技园5号',
     phone: '+86 21 98765432',
-    serviceArea: '上海及周边50公里',
+    serviceArea: 'Shanghai Area',
   },
 ];
 
@@ -75,64 +75,60 @@ export const COMPANIES: Company[] = [
 export const PRODUCTS: Product[] = [
   {
     id: 'p1',
-    name: 'SunEnergyXT Pro 逆变器 5k',
+    name: 'SunEnergyXT Pro Inverter 5k',
     model: 'XT-INV-5000',
-    category: '逆变器',
+    category: 'Inverter',
     imageUrl: 'https://picsum.photos/seed/inverter/300/200',
     specs: [
-      { label: '最大输出', value: '5000W' },
-      { label: '转换效率', value: '98.2%' },
-      { label: '重量', value: '12kg' },
+      { label: 'Max Output', value: '5000W' },
+      { label: 'Efficiency', value: '98.2%' },
+      { label: 'Weight', value: '12kg' },
     ],
     descriptionHtml: `
-      <p>SunEnergyXT Pro 5k 是一款高效、智能的单相混合逆变器，专为家庭储能系统设计。</p>
+      <p>SunEnergyXT Pro 5k is a high-efficiency single-phase hybrid inverter.</p>
       <br/>
-      <h4 class="font-bold">核心优势：</h4>
+      <h4 class="font-bold">Key Features:</h4>
       <ul class="list-disc pl-5 mt-2 space-y-1">
-        <li><strong>超高效率：</strong> 采用最新的 MPPT 算法，最大转换效率达到 98.2%。</li>
-        <li><strong>静音设计：</strong> 无风扇被动散热设计，噪音低于 25dB，适合室内安装。</li>
-        <li><strong>智能监控：</strong> 内置 Wi-Fi 模块，支持 App 远程监控和固件升级。</li>
+        <li><strong>High Efficiency:</strong> 98.2% max efficiency.</li>
+        <li><strong>Silent:</strong> Fanless design, <25dB.</li>
+        <li><strong>Smart:</strong> Built-in Wi-Fi.</li>
       </ul>
-      <br/>
-      <p>该产品通过了 IEC/EN 62109-1/-2 安全认证，提供 10 年标准质保。</p>
     `,
     documents: [
-      { title: '用户手册', url: '#' },
-      { title: '安装指南', url: '#' },
-      { title: 'CE 认证', url: '#' },
+      { title: 'User Manual', url: '#' },
+      { title: 'Installation Guide', url: '#' },
     ],
     faqs: [
-      { question: '错误代码 E01 是什么意思?', answer: '电网电压过高。请检查电网连接。' },
-      { question: '如何重置 WiFi?', answer: '按住按钮 5 秒钟，直到 LED 闪烁蓝色。' },
+      { question: 'What does error E01 mean?', answer: 'Grid voltage too high.' },
+      { question: 'How to reset WiFi?', answer: 'Hold button for 5s.' },
     ],
   },
   {
     id: 'p2',
-    name: 'SunEnergyXT 家庭储能电池 10',
+    name: 'SunEnergyXT Home Battery 10',
     model: 'XT-BAT-10K',
-    category: '储能电池',
+    category: 'Battery',
     imageUrl: 'https://picsum.photos/seed/battery/300/200',
     specs: [
-      { label: '容量', value: '10kWh' },
-      { label: '技术路线', value: '磷酸铁锂 (LiFePO4)' },
-      { label: '质保', value: '10 年' },
+      { label: 'Capacity', value: '10kWh' },
+      { label: 'Technology', value: 'LiFePO4' },
+      { label: 'Warranty', value: '10 Years' },
     ],
     descriptionHtml: `
-      <p>XT-BAT-10K 采用顶级磷酸铁锂电芯，循环寿命超过 6000 次，为您的家庭提供持续稳定的绿色能源。</p>
+      <p>XT-BAT-10K uses top-tier LiFePO4 cells.</p>
       <br/>
-      <h4 class="font-bold">产品特点：</h4>
+      <h4 class="font-bold">Features:</h4>
       <ul class="list-disc pl-5 mt-2 space-y-1">
-        <li>模块化堆叠设计，安装简便，支持后续扩容。</li>
-        <li>IP65 防护等级，支持户外安装。</li>
-        <li>BMS 智能电池管理系统，全方位保护电池安全。</li>
+        <li>Modular design.</li>
+        <li>IP65 rated.</li>
+        <li>Smart BMS.</li>
       </ul>
     `,
     documents: [
-      { title: '数据表', url: '#' },
-      { title: '安全说明书', url: '#' },
+      { title: 'Datasheet', url: '#' },
     ],
     faqs: [
-      { question: '可以安装在室外吗?', answer: '可以，防护等级为 IP65。' },
+      { question: 'Outdoor installation?', answer: 'Yes, IP65 rated.' },
     ],
   },
 ];
@@ -144,10 +140,10 @@ export const INITIAL_TICKETS: Ticket[] = [
   {
     id: 't1',
     sln: 'XT-SH-001',
-    title: '上海浦东-逆变器安装 (Alice负责)',
-    customerName: '张三',
+    title: 'Shanghai Pudong - Inverter Install (Alice)',
+    customerName: 'Zhang San',
     status: TicketStatus.IN_PROGRESS,
-    priority: '高',
+    priority: 'HIGH',
     productId: 'p1',
     createdBy: 'u1', // Alice
     createdRole: UserRole.INTERNAL_SALES,
@@ -158,16 +154,16 @@ export const INITIAL_TICKETS: Ticket[] = [
     assignedToCompanyId: 'c2', // Partner
     assignedToUserId: 'u4',    // Sam
     
-    description: '客户反馈设备红灯，无法并网，请快修团队处理。',
+    description: 'Customer reports red light error.',
     createdAt: new Date('2023-10-25T10:00:00'),
     updatedAt: new Date('2023-10-25T14:30:00'),
-    serviceTypes: ['新设备安装'],
+    serviceTypes: ['New Installation'],
     messages: [
       {
         id: 'm1',
         senderId: 'u1',
         senderName: 'Alice',
-        text: '已指派给快修处理，请尽快上门。',
+        text: 'Assigned to FastFix.',
         timestamp: new Date('2023-10-25T10:00:00'),
       },
     ],
@@ -178,10 +174,10 @@ export const INITIAL_TICKETS: Ticket[] = [
   {
     id: 't2',
     sln: 'XT-BJ-002',
-    title: '北京朝阳-新装咨询 (Bob负责)',
-    customerName: '李四',
+    title: 'Beijing - New Inquiry (Bob)',
+    customerName: 'Li Si',
     status: TicketStatus.PENDING_ASSIGN,
-    priority: '中',
+    priority: 'MEDIUM',
     productId: 'p2',
     createdBy: 'u5', // Bob
     createdRole: UserRole.INTERNAL_SALES,
@@ -192,10 +188,10 @@ export const INITIAL_TICKETS: Ticket[] = [
     assignedToCompanyId: undefined, 
     assignedToUserId: undefined, 
     
-    description: '客户需要购买并安装 10kWh 电池，等待分配安装商。',
+    description: 'Customer wants 10kWh battery.',
     createdAt: new Date('2023-10-26T09:00:00'),
     updatedAt: new Date('2023-10-26T09:05:00'),
-    serviceTypes: ['新设备安装', '旧设备拆除'],
+    serviceTypes: ['New Installation', 'Removal'],
     messages: [],
     logs: [],
   },
@@ -204,10 +200,10 @@ export const INITIAL_TICKETS: Ticket[] = [
   {
     id: 't3',
     sln: 'XT-SYS-003',
-    title: '总部指派-VIP客户改造 (指派给Alice)',
-    customerName: '王五 (VIP)',
+    title: 'HQ Assign - VIP Retrofit (Alice)',
+    customerName: 'Wang Wu (VIP)',
     status: TicketStatus.PENDING_ASSIGN,
-    priority: '高',
+    priority: 'HIGH',
     productId: 'p1',
     createdBy: 'u0', // Super Admin
     createdRole: UserRole.SUPER_ADMIN,
@@ -218,16 +214,16 @@ export const INITIAL_TICKETS: Ticket[] = [
     assignedToCompanyId: undefined,
     assignedToUserId: undefined,
     
-    description: 'VIP客户需要拆除旧设备并安装新设备，请Alice优先跟进处理。',
+    description: 'VIP needs retrofit. Alice please handle.',
     createdAt: new Date('2023-10-27T08:00:00'),
     updatedAt: new Date('2023-10-27T08:00:00'),
-    serviceTypes: ['旧设备拆除', '新设备安装'],
+    serviceTypes: ['Removal', 'New Installation'],
     messages: [
         {
             id: 'm3a',
             senderId: 'u0',
             senderName: 'Super Admin',
-            text: 'Alice, 这个客户很重要，请你亲自负责。',
+            text: 'Alice, high priority.',
             timestamp: new Date('2023-10-27T08:01:00'),
         }
     ],
@@ -238,10 +234,10 @@ export const INITIAL_TICKETS: Ticket[] = [
   {
     id: 't4',
     sln: 'XT-QA-004',
-    title: '库存设备安装申请',
-    customerName: '快修库存',
+    title: 'Stock Install Application',
+    customerName: 'FastFix Stock',
     status: TicketStatus.PENDING_INTERNAL_AUDIT,
-    priority: '中',
+    priority: 'MEDIUM',
     productId: 'p1',
     createdBy: 'u3', // Ian
     createdRole: UserRole.PARTNER_ADMIN,
@@ -252,16 +248,16 @@ export const INITIAL_TICKETS: Ticket[] = [
     assignedToCompanyId: 'c2', 
     assignedToUserId: 'u4', // Sam handled the check
     
-    description: '为本地客户安装库存设备。',
+    description: 'Installing stock unit for local client.',
     createdAt: new Date('2023-10-24T10:00:00'),
     updatedAt: new Date('2023-10-27T16:00:00'),
-    serviceTypes: ['新设备安装'],
+    serviceTypes: ['New Installation'],
     messages: [
         {
             id: 'm4a',
             senderId: 'u4',
             senderName: 'Sam',
-            text: '安装完成，运行正常。',
+            text: 'Installation complete.',
             timestamp: new Date('2023-10-27T15:00:00'),
         },
     ],
@@ -272,10 +268,10 @@ export const INITIAL_TICKETS: Ticket[] = [
   {
     id: 't5',
     sln: 'XT-HQ-005',
-    title: '总部样板间安装 (HQ团队)',
-    customerName: 'SunEnergyXT 展厅',
+    title: 'HQ Showroom Install',
+    customerName: 'SunEnergyXT Showroom',
     status: TicketStatus.PENDING_PROCESS,
-    priority: '低',
+    priority: 'LOW',
     productId: 'p2',
     createdBy: 'u1', // Alice
     createdRole: UserRole.INTERNAL_SALES,
@@ -286,10 +282,10 @@ export const INITIAL_TICKETS: Ticket[] = [
     assignedToCompanyId: 'c0', // Assigned to HQ Self
     assignedToUserId: 'u7',    // Assigned to Make
     
-    description: '需要在总部一楼展厅安装新的展示电池。',
+    description: 'Install new battery in lobby.',
     createdAt: new Date('2023-10-28T11:00:00'),
     updatedAt: new Date('2023-10-28T11:30:00'),
-    serviceTypes: ['新设备安装'],
+    serviceTypes: ['New Installation'],
     messages: [],
     logs: [],
   },
@@ -298,10 +294,10 @@ export const INITIAL_TICKETS: Ticket[] = [
   {
     id: 't6',
     sln: 'XT-OLD-006',
-    title: '上月已完成的拆除任务',
-    customerName: '赵六',
+    title: 'Last Month Removal',
+    customerName: 'Zhao Liu',
     status: TicketStatus.CLOSED,
-    priority: '低',
+    priority: 'LOW',
     productId: 'p1',
     createdBy: 'u5', // Bob
     createdRole: UserRole.INTERNAL_SALES,
@@ -312,10 +308,10 @@ export const INITIAL_TICKETS: Ticket[] = [
     assignedToCompanyId: 'c2',
     assignedToUserId: 'u4',
     
-    description: '客户搬迁，拆除旧设备。',
+    description: 'Client moving out.',
     createdAt: new Date('2023-09-01T10:00:00'),
     updatedAt: new Date('2023-09-05T16:00:00'),
-    serviceTypes: ['旧设备拆除'],
+    serviceTypes: ['Removal'],
     messages: [],
     logs: [],
   }
@@ -323,16 +319,16 @@ export const INITIAL_TICKETS: Ticket[] = [
 
 // --- Notifications ---
 export const NOTIFICATIONS: Notification[] = [
-  { id: 'n1', title: '新产品 SunEnergyXT Pro X 系列发布', date: '2023-10-20', type: 'news', link: '#' },
-  { id: 'n2', title: '系统维护通知：11月1日凌晨', date: '2023-10-28', type: 'alert' },
-  { id: 'n3', title: '固件更新 v2.1.0 可下载', date: '2023-10-25', type: 'update', link: '#' },
+  { id: 'n1', title: 'New Product: SunEnergyXT Pro X Released', date: '2023-10-20', type: 'news', link: '#' },
+  { id: 'n2', title: 'System Maintenance: Nov 1st', date: '2023-10-28', type: 'alert' },
+  { id: 'n3', title: 'Firmware v2.1.0 Available', date: '2023-10-25', type: 'update', link: '#' },
 ];
 
 export const REGISTRATION_REQUESTS: RegistrationRequest[] = [
   { 
     id: 'r1', 
-    companyName: '绿色能源科技', 
-    contactPerson: '王经理', 
+    companyName: 'Green Energy Tech', 
+    contactPerson: 'Manager Wang', 
     email: 'wang@green-energy.com', 
     phone: '13800001234', 
     status: 'PENDING', 
